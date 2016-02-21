@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Tel'aran'rhiod</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+      body {
+        margin: 0px;
+        overflow: hidden;
+      }
+      #webglviewer {
+        bottom: 0;
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="webglviewer"></div>
+
+    <script src="./js/Three.js"></script>
+    <script src="./js/StereoEffect.js"></script>
+    <script src="./js/DeviceOrientationControls.js"></script>
+    <script src="./js/OrbitControls.js"></script>
+	<script src="js/Tween.js"></script>
+
+	<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.1.0/annyang.min.js"></script> -->
+	<script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>	
+
+	<script>
+
+
+      var scene,
+          camera, 
+          renderer,
+          element,
+          container,
+          effect,
+          controls,
+          clock
+		  
+		var meshes, geoms, mats, nums, state, sizes
+		var sprite_mat
+	
+		var orbit = 0
+		
+		var roomSound
+    
+	var photos = ['1.jpg','2.jpg','3.jpg','4.jpg','5.jpg','6.jpg','7.jpg','8.jpg','9.jpg','10.jpg','11.jpg','12.jpg','13.jpg','14.jpg'];
+	
+
+
+//		  function loadSound () {
+//			createjs.Sound.registerSound("sounds/3.mp3", 3);
+//			createjs.Sound.registerSound("sounds/10.mp3", 10);
+//			createjs.Sound.registerSound("sounds/1.mp3", 1);
+//		  }
+
+//		  function playSound (id) {
+//			console.log('Playsound: ' +id)
+//			roomSound = createjs.Sound.play(id)
+			
+//		  }
+//		  function stopSound (id) {
+//		  	console.log('Stopsound: ' +id)
+//			roomSound.stop(id);
+//		}
+	init();
+
+      
+    function init() {
+	
+
+		  
+		loadSound();
+		
+	    state = 1; // One is free moving, floating forward
+		
+        scene = new THREE.Scene();
+       	var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
+		var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
+		camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+        scene.add(camera);
+
+        renderer = new THREE.WebGLRenderer();
+        element = renderer.domElement;
+        container = document.getElementById('webglviewer');
+        container.appendChild(element);
+
+		// Stereo Effect	
+        effect = new THREE.StereoEffect(renderer);
+
+        // Our initial control fallback with mouse/touch events in case DeviceOrientation is not enabled
+        controls = new THREE.OrbitControls(camera, element);
+        controls.target.set(
+          camera.position.x + 0.15,
+          camera.position.y,
+          camera.position.z
+		  
+        );
+		orbit = true
+        controls.noPan = true;
+        controls.noZoom = true;
+		
+        // Our preferred controls via DeviceOrientation
+        function setOrientationControls(e) {
+          if (!e.alpha) {
+            return;
+          }
+		  orbit = false
+          controls = new THREE.DeviceOrientationControls(camera, true);
+          controls.connect();
+          controls.update();
+
+          element.addEventListener('click', fullscreen, false);
+
+          window.removeEventListener('deviceorientation', setOrientationControls, true);
+        }
+		
+		//if (annyang) {
+		//  // Let's define our first command. First the text we expect, and then the function it should call
+		//  var commands = {
+		//	'test': function() {
+		//	var geometry1 = new THREE.BoxGeometry( 100, 100, 100, 4, 4, 4 );
+		//	var material1 = new THREE.MeshBasicMaterial( { color: 0xff00ff, side: THREE.BackSide, wireframe: true } );
+		//	var mesh = new THREE.Mesh( geometry1, material1 );
+		//	scene.add( mesh1 );
+		//	}
+		// };
+
+		  // Add our commands to annyang
+		//  annyang.addCommands(commands);
+
+		  // Start listening. You can call this here, or attach this call to an event, button, etc.
+		 // annyang.start();
+		//}
+		
+        window.addEventListener('deviceorientation', setOrientationControls, true);
+
+		nums = photos.length;
+		
+		meshes = [];
+		mats = [];
+		sprites = []
+				
+		draw_sprites()
+
+		
+	
+		
+
+		var geometry0 = new THREE.SphereGeometry( 10000, 16, 8 );
+		var mats0 =  new THREE.MeshBasicMaterial( {
+				map: new THREE.TextureLoader().load( 'images/er/0.jpg' )
+			} );
+			
+		geometry0.scale( - 1, 1, 1 );
+		mesh0 = new THREE.Mesh( geometry0, mats0);
+
+		scene.add( mesh0 );	
+		
+		camera.position.x = 5000;
+		   
+		clock = new THREE.Clock();
+
+		animate();
+      }
+
+	 function render_photo(i){
+		geometry = new THREE.SphereGeometry( 500, 16, 8 );
+		geometry.scale( - 1, 1, 1 );
+
+		mats = new THREE.MeshBasicMaterial( {
+			map: new THREE.TextureLoader().load( 'images/er/'+photos[i])
+		});
+		
+		mesh = new THREE.Mesh( geometry, mats);
+
+		mats.transparent = true;
+		mats.opacity = 0;
+		scene.add( mesh);	 
+	 }
+	  	
+	 function draw_sprites(){
+		var ballTexture = THREE.ImageUtils.loadTexture( 'images/circle.png' );
+		
+		sprite = [];
+		geometry = new THREE.Geometry();
+		var textureLoader = new THREE.TextureLoader();
+		sprite1 = textureLoader.load('images/circle.png');
+
+		for (i = 0; i < nums; i++) {
+			sprite_mat = new THREE.SpriteMaterial( { map: ballTexture, useScreenCoordinates: true   });
+			sprite[i] = new THREE.Vector3();
+
+			sprite[i].x =  2000 * Math.cos(2*3.14159*(i/nums))
+			sprite[i].y =  2000 * Math.sin(2*3.14159*(i/nums))
+
+			//scene.add( sprite[i] );
+		}
+
+		for ( i = 0; i < nums; i ++ ) {
+			geometry.vertices.push(sprite[i]);
+		}
+
+		color  = [1,1,1];
+		size   = 128;
+
+		materials = new THREE.PointsMaterial( { size: size, map: sprite1, blending: THREE.AdditiveBlending, depthTest: false, transparent : true } );
+
+		particles = new THREE.Points( geometry, materials );
+
+		scene.add( particles );		
+	}	 
+
+	
+    function lock_in() {
+		
+		// Only efficient for a small number or nodes
+		for (i = 0; i < nums; i++) {
+			if (sprite[i].distanceTo(camera.position) < 500){
+				
+				var goto_pos = sprite[i].clone()
+				
+				camera.lookAt(goto_pos)
+				
+				goto_pos.x = (camera.position.x+ 0.99*(goto_pos.x -camera.position.x)) 
+				goto_pos.y = (camera.position.y+ 0.99*(goto_pos.y -camera.position.y)) 
+				goto_pos.z = (camera.position.z+ 0.99*(goto_pos.z -camera.position.z)) 
+				
+				render_photo(i)				
+				
+				setupTween (camera.position.clone(),goto_pos, 7500,i+1);	
+				state = 0;
+			}
+		}
+	}	
+	
+	function disolve(index){
+		
+		
+		new TWEEN.Tween( mesh.material ).to( { opacity: 0 }, 5000 ).start().onComplete(
+			function(){
+			    stopSound(index);
+				state = 1;
+				if(orbit){
+				camera.position.x = 5000;
+				}});
+				
+				
+	}
+	
+function setupTween (position, target, duration,index)
+{
+    new TWEEN.Tween (position)
+        .to (target, duration)
+        .easing (TWEEN.Easing.Circular.Out)
+        .onUpdate (
+            function() {
+                camera.position.copy (position);
+            })
+        .start()
+		.onComplete(function() {
+		
+			// Moved to sprite face
+		
+			var geometrycube = new THREE.CubeGeometry( 50, 50, 50 );
+			geometrycube.scale( - 1, 1, 1 );
+			
+			var materialcube = new THREE.MeshBasicMaterial({
+			color: 0xffffff,
+			vertexColors: THREE.FaceColors
+			});
+			materialcube.transparent = true;
+			var cube = new THREE.Mesh( geometrycube, materialcube );
+			scene.add( cube );
+			
+			
+			var materialcube2 = new THREE.MeshBasicMaterial({
+			color: 0xffffff,
+			vertexColors: THREE.FaceColors
+			});
+			materialcube2.transparent = true;
+			var cube2 = new THREE.Mesh( geometrycube, materialcube2 );
+
+			cube2.position.copy(position)// camera.position.clone()
+			cube2.material.opacity = 0;
+			
+			scene.add( cube2 );
+			
+			
+			new TWEEN.Tween( cube2.material ).to( { opacity: 1 }, 2000 ).start().onComplete(function(){
+			setTimeout(function(){
+			camera.position.x = 0;
+			camera.position.y = 0;
+			camera.position.z = 0;
+			mats.opacity = 1;
+			//playSound(index);
+			
+			
+			new TWEEN.Tween( cube.material ).to( { opacity: 0 }, 2000 ).start().onComplete(function(){
+				scene.remove(cube); scene.remove(cube2);
+				
+			});
+			
+			},1000);
+});
+			
+			
+			setTimeout(function(){
+				disolve(index);
+			}, 15000)		
+			
+		})	;
+	}
+	
+      function animate() {
+        var elapsedSeconds = clock.getElapsedTime()
+
+		
+		
+		if (state){
+			lock_in()
+			camera.translateZ(  - 5 );
+		}
+
+        requestAnimationFrame(animate);
+		TWEEN.update();
+        update(clock.getDelta());
+        render(clock.getDelta());
+      }
+
+      function resize() {
+        var width = container.offsetWidth;
+        var height = container.offsetHeight;
+
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(width, height);
+        effect.setSize(width, height);
+      }
+
+      function update(dt) {
+        resize();
+		 
+        camera.updateProjectionMatrix();
+
+        controls.update(dt);
+      }
+
+      function render(dt) {
+	    effect.render(scene, camera);
+      }
+
+      function fullscreen() {
+        if (container.requestFullscreen) {
+          container.requestFullscreen();
+        } else if (container.msRequestFullscreen) {
+          container.msRequestFullscreen();
+        } else if (container.mozRequestFullScreen) {
+          container.mozRequestFullScreen();
+        } else if (container.webkitRequestFullscreen) {
+          container.webkitRequestFullscreen();
+        }
+      }
+
+      function getURL(url, callback) {
+        var xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.onreadystatechange = function() {
+          if (xmlhttp.readyState == 4) {
+             if (xmlhttp.status == 200){
+                 callback(JSON.parse(xmlhttp.responseText));
+             }
+             else {
+                 console.log('We had an error, status code: ', xmlhttp.status);
+             }
+          }
+        }
+
+        xmlhttp.open('GET', url, true);
+        xmlhttp.send();
+      }
+    </script>
+  </body>
+</html>
