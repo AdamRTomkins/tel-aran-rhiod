@@ -105,12 +105,17 @@ syntax-highlight: True
 
 events:
   - image: "/img/timeline/spidertocat.png"
-    date: "September 2013 - Today"
-    description: "Saving the neighborhood!"
+    date: "Desktop Site"
+    description: "viewable in browsers that do not require VR"
+    link: "/sky.html"
   - image: "/img/timeline/baracktocat.jpg"
-    date: "September 2007 - August 2013"
-    description: "Started coding"
-
+    date: "Google Cardboard"
+    description: "stereoscopic rendering suidable for mobile  VR viewers"
+    link: "http://www.google.com"
+  - image: "/img/timeline/baracktocat.jpg"
+    date: "Experimental VR"
+    description: "includes environmental sound, not suitable for low-end memory devices"
+    link: "http://www.google.com"
 # First image of the Timeline
 
 timeline-img: "/img/timeline/default.png"
@@ -145,7 +150,7 @@ social:
 
 pages_list:
   About: 'about'
-#  Timeline: 'timeline'
+  Experience: 'timeline'
   Contact: 'contact'
 
 # Exclusion list from the generated _site
