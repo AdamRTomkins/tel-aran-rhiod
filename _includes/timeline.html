@@ -19,7 +19,7 @@
 
           <li class="{{ class }}">
             <div class="timeline-image">
-              <a  href="{{ event.link }}"> <img class="img-circle img-responsive" src="{{site.baseurl}}{{ event.image }}" alt=""></a>
+              <a  href="{{ site.baseurl }}{{ event.link }}"> <img class="img-circle img-responsive" src="{{site.baseurl}}{{ event.image }}" alt=""></a>
             </div>
             <div class="timeline-panel">
               <div class="timeline-heading">
@@ -31,12 +31,6 @@
             </div>
           </li>
         {% endfor %}
-
-        <li class="timeline-inverted">
-          <div class="timeline-image">
-            <img class="img-circle img-responsive" src="{{site.baseurl}}{{ site.timeline-img }}" alt="">
-          </div>
-        </li>
       </ul>
     </div>
   </div>

@@ -104,21 +104,21 @@ syntax-highlight: True
 ############
 
 events:
-  - image: "/img/timeline/spidertocat.png"
+  - image: "/img/timeline/laptop.png"
     date: "Desktop Site"
     description: "viewable in browsers that do not require VR"
     link: "/sky.html"
-  - image: "/img/timeline/baracktocat.jpg"
+  - image: "/img/timeline/Google_Cardboard_logo.png"
     date: "Google Cardboard"
     description: "stereoscopic rendering suidable for mobile  VR viewers"
-    link: "http://www.google.com"
-  - image: "/img/timeline/baracktocat.jpg"
+    link: "/sky.html?vr=1"
+  - image: "/img/timeline/Google_Cardboard_logo_exp.png"
     date: "Experimental VR"
     description: "includes environmental sound, not suitable for low-end memory devices"
-    link: "http://www.google.com"
+    link: "/sky.html?vr=1&ex=1"
 # First image of the Timeline
 
-timeline-img: "/img/timeline/default.png"
+#timeline-img: "/img/timeline/default.png"
 
 ###########
 # Contact #
